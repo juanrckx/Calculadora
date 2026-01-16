@@ -12,10 +12,12 @@ namespace Servidor.Network
 
         public event Action<string> LogEvent;
 
-        public ServidorTCP(int puerto = 5000)
+        public ServidorTCP(int puerto = 5000, CSVManager csvManager = null)
         {
             _listener = new TcpListener(IPAddress.Any, puerto);
             _clientesConectados = new ConcurrentDictionary<string, TcpClient>();
+
+            _csManager = csvManager ?? new CSVManager("historial.csv");
         }
 
         public void Iniciar()
@@ -34,6 +36,10 @@ namespace Servidor.Network
                 try
                 {
                     var cliente = await _listener.AcceptTcpClientAsync();
+                    var clienteEndPoint = cliente.Client.RemoteEndPoint as IPEndPoint;
+
+                    LogEvent?.Invoke($"Nueva conexión desde {clienteEndPoint.Address}:{clienteEndPoint.Port}");
+
                     var manejador = new ManejadorCliente(cliente);
                     Task.Run(() => manejador.ManejarConexion());
                 }
@@ -42,6 +48,13 @@ namespace Servidor.Network
                     LogEvent?.Invoke($"Error aceptando conexión: {ex.Message}");
                 }
             }
+        }
+
+        public void Detener()
+        {
+            _activo = false;
+            _listener.Stop();
+            LogEvent?.Invoke("Servidor detenido");
         }
     }
 }
