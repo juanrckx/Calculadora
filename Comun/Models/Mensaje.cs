@@ -8,7 +8,7 @@ namespace Comun.Models
         public TipoMensaje Tipo { get; set; }
         public string Contenido { get; set; }
         public string IdCliente { get; set; }
-        public DateTime Fecha { get; set }
+        public DateTime Fecha { get; set; }
     }
 }
 
