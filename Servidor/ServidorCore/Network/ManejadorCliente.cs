@@ -1,6 +1,8 @@
 using System.Net.Sockets;
 using Comun.Models;
 using ComunUtils;
+using ServidorCore.ExpressionTree;
+using ServidorCore.Data;
 
 namespace Servidor.Network
 {
@@ -9,6 +11,7 @@ namespace Servidor.Network
         private TcpClient _cliente;
         private NetworkStream _stream;
         private string _idCliente;
+        private CSVManager _csvManager;
 
         public ManejadorCliente(TcpClient cliente)
         {
