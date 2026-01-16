@@ -26,7 +26,7 @@ namespace Servidor.Network
                 {
                     Tipo = TipoMensaje.ConexionEstablecida,
                     IdCliente = _idCliente,
-                    Contenido = "Conexión establecida con éxito"
+                    Contenido = "Conexión establecida con éxito",
                     Fecha = DateTime.Now
                 };
 
