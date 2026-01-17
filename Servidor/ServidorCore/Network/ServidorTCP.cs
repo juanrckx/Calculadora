@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Collections.Concurrent;
+using ServidorCore.Data;
 
 namespace Servidor.Network
 {
@@ -9,15 +10,16 @@ namespace Servidor.Network
         private TcpListener _listener;
         private bool _activo;
         private ConcurrentDictionary<string, TcpClient> _clientesConectados;
+        private CSVManager _csvManager;
 
         public event Action<string> LogEvent;
 
-        public ServidorTCP(int puerto = 5000, CSVManager csvManager = null)
+        public ServidorTCP(int puerto = 8080, CSVManager csvManager = null)
         {
             _listener = new TcpListener(IPAddress.Any, puerto);
             _clientesConectados = new ConcurrentDictionary<string, TcpClient>();
 
-            _csManager = csvManager ?? new CSVManager("historial.csv");
+            _csvManager = csvManager ?? new CSVManager("historial.csv");
         }
 
         public void Iniciar()
@@ -40,7 +42,17 @@ namespace Servidor.Network
 
                     LogEvent?.Invoke($"Nueva conexión desde {clienteEndPoint.Address}:{clienteEndPoint.Port}");
 
-                    var manejador = new ManejadorCliente(cliente);
+                    var manejador = new ManejadorCliente(cliente, _csvManager);
+
+                    manejador.OnLogMensaje += (msg) => LogEvent?.Invoke(msg);
+                    manejador.OnClienteDesconectado += (id) =>
+                    {
+                        _clientesConectados.TryRemove(id, out _);
+                        LogEvent?.Invoke($"Cliente {id} descoenctado");
+                    };
+
+                    _clientesConectados[manejador.IdCliente] = cliente;
+
                     Task.Run(() => manejador.ManejarConexion());
                 }
                 catch (Exception ex)

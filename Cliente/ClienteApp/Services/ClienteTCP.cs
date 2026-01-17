@@ -15,8 +15,9 @@ namespace ClienteApp.Services
         public event Action<string> OnResultadoRecibido;
         public event Action<string> OnError;
         public event Action<List<HistorialItem>> OnHistorialRecibido;
+        public event Action<string> OnEstadoCambiado; 
 
-        public async Task<bool> Conectar(string ip = "152.231.170.2", int puerto = 5000)
+        public async Task<bool> Conectar(string ip = "152.231.170.2", int puerto = 8080)
         {
             try
             {
@@ -34,34 +35,52 @@ namespace ClienteApp.Services
             }
             catch (Exception ex)
             {
-                EstadoCambiado?.Invoke($"Error de conexión {ex.Message}");
+                OnEstadoCambiado?.Invoke($"Error de conexión {ex.Message}");
+                OnError?.Invoke($"No se pudo conectar al servidor: {ex.Message}");
+
                 return false;
             }
         }
 
         public async Task EnviarExpresion(string expresion)
         {
-            var mensaje = new Mensaje
+            try
             {
-                Tipo = TipoMensaje.ExpresionParaEvaluar,
-                Contenido = expresion,
-                IdCliente = _idCliente,
-                Fecha = DateTime.Now
-            };
+                var mensaje = new Mensaje
+                {
+                    Tipo = TipoMensaje.ExpresionParaEvaluar,
+                    Contenido = expresion,
+                    IdCliente = _idCliente,
+                    Fecha = DateTime.Now
+                };
 
-            await EnviarMensaje(mensaje);
+                await EnviarMensaje(mensaje);
+                OnEstadoCambiado?.Invoke("Expresión enviada para evaluación...");
+            }
+            catch (Exception ex)
+            {
+                OnError?.Invoke($"Error enviando expresión: {ex.Message}");
+            }
         }
 
         public async Task SolicitarHistorial()
         {
-            var mensaje = new Mensaje
+            try
             {
-                Tipo = TipoMensaje.HistorialSolicitado,
-                IdCliente = _idCliente,
-                Fecha = DateTime.Now
-            };
+                var mensaje = new Mensaje
+                {
+                    Tipo = TipoMensaje.HistorialSolicitado,
+                    IdCliente = _idCliente,
+                    Fecha = DateTime.Now
+                };
 
-            await EnviarMensaje(mensaje);
+                await EnviarMensaje(mensaje);
+                OnEstadoCambiado?.Invoke("Solicitando historial...");
+            }
+            catch (Exception ex)
+            {
+                OnError?.Invoke($"Error solicitando historial: {ex.Message}");
+            }
         }
 
         private async Task EscucharMensajes()
@@ -81,6 +100,7 @@ namespace ClienteApp.Services
             {
                 
                 OnError?.Invoke($"Error de conexión: {ex.Message}");
+                OnEstadoCambiado?.Invoke("Desconectado del servidor");
             }
         }
 
@@ -91,42 +111,53 @@ namespace ClienteApp.Services
                 case TipoMensaje.ConexionEstablecida:
                     _idCliente = mensaje.IdCliente;
                     OnConexionEstablecida?.Invoke(mensaje.Contenido);
+                    OnEstadoCambiado?.Invoke($"Conectado (ID: {_idCliente})");
                     break;
 
                 case TipoMensaje.ResultadoCalculado:
                     OnResultadoRecibido?.Invoke(mensaje.Contenido);
+                    OnEstadoCambiado?.Invoke("Resultado recibido");
                     break;
 
                 case TipoMensaje.HistorialEnviado:
                     ProcesarHistorial(mensaje.Contenido);
+                    OnEstadoCambiado?.Invoke("Historial recibido");
                     break;
                 
                 case TipoMensaje.Error:
                     OnError?.Invoke(mensaje.Contenido);
+                    OnEstadoCambiado?.Invoke("Error recibido");
                     break;
             }
         }
 
         private void ProcesarHistorial(string contenido)
         {
-            var historialItems = new List<HistorialItem>();
-            var lineas = contenido.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (var linea in lineas)
+            try
             {
-                var partes = linea.Split('|');
-                if (partes.Length >= 3)
-                {
-                    historialItems.Add(new HistorialItem
-                    {
-                        Fecha = partes[0],
-                        Expresion = partes[1],
-                        Resultado = partes[2]
-                    });
-                }
-            }
+                var historialItems = new List<HistorialItem>();
+                var lineas = contenido.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
-            OnHistorialRecibido?.Invoke(historialItems);
+                foreach (var linea in lineas)
+                {
+                    var partes = linea.Split('|');
+                    if (partes.Length >= 3)
+                    {
+                        historialItems.Add(new HistorialItem
+                        {
+                            Fecha = partes[0],
+                            Expresion = partes[1],
+                            Resultado = partes[2]
+                        });
+                    }
+                }
+
+                OnHistorialRecibido?.Invoke(historialItems);
+            }
+            catch (Exception ex)
+            {
+                OnError?.Invoke($"Error procesando historial: {ex.Message}");
+            }
         }
 
         private async Task<Mensaje> RecibirMensaje()
@@ -141,8 +172,10 @@ namespace ClienteApp.Services
                     return Serializador.Deserializar(buffer.Take(bytesRead).ToArray());
                 }
             }
-            catch {  }
-
+            catch (Exception ex)
+            {
+                OnEstadoCambiado?.Invoke($"Error recibiendo mensaje: {ex.Message}");      
+            }
             return null;
         }
 
@@ -155,13 +188,33 @@ namespace ClienteApp.Services
             }
             catch (Exception ex)
             {
-                OnError?.Invoke($"Error enviando mensaje: {ex.Message}");
+                OnEstadoCambiado?.Invoke($"Error enviando mensaje: {ex.Message}");
+                throw;   
             }
         }
 
         public void Desconectar()
         {
-            _tcpCliente?.Close();
+            try
+            {
+                _stream?.Close();
+                _tcpCliente?.Close();
+                OnEstadoCambiado?.Invoke("Desconectado");
+            }
+            catch (Exception ex)
+            {
+                OnError?.Invoke($"Error desconectando: {ex.Message}");
+            }
+        }
+
+        public bool EstaConectado()
+        {
+            return _tcpCliente?.Connected == true;
+        }
+
+        public string ObtenerIdCliente()
+        {
+            return _idCliente;
         }
     }
 }

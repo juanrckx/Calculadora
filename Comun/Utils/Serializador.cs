@@ -1,12 +1,13 @@
 using Newtonsoft.Json;
 using System.Text;
 using System.Text.Json.Serialization;
+using Comun.Models;
 
 namespace Comun.Utils
 {
     public static class Serializador
     {
-        public static byte[] Serialier(Mensaje mensaje)
+        public static byte[] Serializar(Mensaje mensaje)
         {
             string json = JsonConvert.SerializeObject(mensaje);
             return Encoding.UTF8.GetBytes(json);

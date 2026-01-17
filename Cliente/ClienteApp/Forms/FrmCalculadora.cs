@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using System.Windows.Forms;
 using ClienteApp.Services;
+using Comun.Models;
 
 namespace ClienteApp.Forms
 {
@@ -9,11 +10,34 @@ namespace ClienteApp.Forms
     {
         private ClienteTCP _cliente;
         private string _servidorIp = "152.231.170.2";
-        private int _puerto = 5000;
+        private int _puerto = 8080;
+
+        // Controles
+        private TextBox txtExpresion;
+        private TextBox txtResultado;
+        private Button btnConectar;
+        private Button btnEvaluar;
+        private Button btnHistorial;
+        private Label lblEstado;
+        
+        // Botones numéricos
+        private Button btnNum0, btnNum1, btnNum2, btnNum3, btnNum4, 
+                       btnNum5, btnNum6, btnNum7, btnNum8, btnNum9;
+        
+        // Botones de operadores
+        private Button btnSuma, btnResta, btnMulti, btnDiv, btnMod, 
+                       btnPotencia, btnAnd, btnOr, btnXor, btnNot;
+        
+        // Botones adicionales
+        private Button btnParentesisIzq, btnParentesisDer, 
+                       btnLimpiar, btnBorrar, btnPunto;
 
         public FrmCalculadora()
         {
-            
+            InitializeComponent();
+            InicializarCliente();
+            ConfigurarBotones();
+            ConfigurarEstadoInicial();
         }
 
         private void InicializarCliente()
@@ -23,6 +47,13 @@ namespace ClienteApp.Forms
             _cliente.OnResultadoRecibido += ResultadoRecibido;
             _cliente.OnError += ErrorRecibido;
             _cliente.OnHistorialRecibido += HistorialRecibido;
+        }
+
+        private void ConfigurarEstadoInicial()
+        {
+            lblEstado.Text = "Desconectado";
+            btnEvaluar.Enabled = false;
+            btnHistorial.Enabled = false;
         }
 
         private async void btnConectar_Click(object sender, EventArgs e)

@@ -16,7 +16,7 @@ namespace Comun.Models
         public HistorialItem(string fecha, string expresion, string resultado)
         {
             Fecha = fecha;
-            Expresion = espresion;
+            Expresion = expresion;
             Resultado = resultado;
         }
     }

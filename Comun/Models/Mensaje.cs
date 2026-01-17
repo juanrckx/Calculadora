@@ -1,4 +1,5 @@
 using System;
+using Comun.Enums;
 
 namespace Comun.Models
 {
@@ -9,18 +10,5 @@ namespace Comun.Models
         public string Contenido { get; set; }
         public string IdCliente { get; set; }
         public DateTime Fecha { get; set; }
-    }
-}
-
-namespace Comun.Enums
-{
-    public enum TipoMensaje
-    {
-        ConexionEstablecida,
-        ExpresionParaEvaluar,
-        ResultadoCalculado,
-        Error,
-        HistorialSolicitado,
-        HistorialEnviado
     }
 }
