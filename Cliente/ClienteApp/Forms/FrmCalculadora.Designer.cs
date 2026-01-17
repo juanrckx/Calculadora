@@ -28,7 +28,7 @@ namespace ClienteApp.Forms
             CrearControles();
 
             this.ResumeLayout(false);
-            thisPerformLayout();
+            this.PerformLayout();
         }
 
         private void CrearControles()

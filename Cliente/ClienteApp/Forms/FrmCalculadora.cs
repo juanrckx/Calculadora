@@ -97,7 +97,7 @@ namespace ClienteApp.Forms
 
         private void ConexionEstablecida(string mensaje)
         {
-            this.Invoke((MethodInvoker)delegate
+            this.Invoke((Action)delegate
             {
                 MessageBox.Show(mensaje, "Conexión", 
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -106,7 +106,7 @@ namespace ClienteApp.Forms
 
         private void ResultadoRecibido(string resultado)
         {
-            this.Invoke((MethodInvoker)delegate
+            this.Invoke((Action)delegate
             {
                 txtResultado.Text = resultado;
             });
@@ -114,7 +114,7 @@ namespace ClienteApp.Forms
 
         private void ErrorRecibido(string error)
         {
-            this.Invoke((MethodInvoker)delegate
+            this.Invoke((Action)delegate
             {
                 MesssageBox.Show(error, "Error", 
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -125,7 +125,7 @@ namespace ClienteApp.Forms
 
         private void HistorialRecibido(List<HistorialItem> historial)
         {
-            this.Invoke((MethodInvoker)delegate {
+            this.Invoke((Action)delegate {
                 var frmHistorial = new FrmHistorial(historial);
                 frmHistorial.ShowDialog();
             });

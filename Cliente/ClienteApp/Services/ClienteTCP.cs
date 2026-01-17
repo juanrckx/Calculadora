@@ -2,6 +2,7 @@ using System.Net.Sockets;
 using Comun.Models;
 using Comun.Utils;
 using System.Text;
+using Comun.Enums;
 
 namespace ClienteApp.Services
 {
@@ -11,7 +12,7 @@ namespace ClienteApp.Services
         private NetworkStream _stream;
         private string _idCliente;
 
-        public event Action<Mensaje> OnConexionEstablecida;
+        public event Action<string> OnConexionEstablecida;
         public event Action<string> OnResultadoRecibido;
         public event Action<string> OnError;
         public event Action<List<HistorialItem>> OnHistorialRecibido;
@@ -22,11 +23,11 @@ namespace ClienteApp.Services
             try
             {
                 _tcpCliente = new TcpClient();
-                await _cliente.ConnectAsync(ip, puerto);
-                _stream = _cliente.GetStream();
+                await _tcpCliente.ConnectAsync(ip, puerto);
+                _stream = _tcpCliente.GetStream();
                 _idCliente = Guid.NewGuid().ToString();
 
-                EstadoCambiado?.Invoke("Conectado al servidor");
+                OnEstadoCambiado?.Invoke("Conectado al servidor");
 
                 // Iniciar escucha de mensajes
                 Task.Run(() => EscucharMensajes());
