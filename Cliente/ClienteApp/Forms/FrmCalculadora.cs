@@ -116,7 +116,7 @@ namespace ClienteApp.Forms
         {
             this.Invoke((Action)delegate
             {
-                MesssageBox.Show(error, "Error", 
+                MessageBox.Show(error, "Error", 
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 txtResultado.Text = "Error";
