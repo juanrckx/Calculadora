@@ -18,7 +18,7 @@ namespace ClienteApp.Services
         public event Action<List<HistorialItem>> OnHistorialRecibido;
         public event Action<string> OnEstadoCambiado; 
 
-        public async Task<bool> Conectar(string ip = "152.231.170.2", int puerto = 8080)
+        public async Task<bool> Conectar(string ip = "127.0.0.1", int puerto = 8080)
         {
             try
             {

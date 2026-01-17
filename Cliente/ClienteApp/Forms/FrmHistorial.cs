@@ -75,13 +75,5 @@ namespace ClienteApp.Forms
         {
             this.Close();
         }
-        
-        // Para el diseñador
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // El código del diseñador iría aquí
-            this.ResumeLayout(false);
-        }
     }
 }

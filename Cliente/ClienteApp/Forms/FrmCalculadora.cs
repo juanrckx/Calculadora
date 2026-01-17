@@ -9,7 +9,7 @@ namespace ClienteApp.Forms
     public partial class FrmCalculadora : Form
     {
         private ClienteTCP _cliente;
-        private string _servidorIp = "152.231.170.2";
+        private string _servidorIp = "127.0.0.1";
         private int _puerto = 8080;
 
         // Controles
