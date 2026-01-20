@@ -97,11 +97,8 @@ namespace ClienteApp.Forms
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dgvHistorial;
         private System.Windows.Forms.DataGridViewTextBoxColumn colFecha;
         private System.Windows.Forms.DataGridViewTextBoxColumn colExpresion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colResultado;
-        private System.Windows.Forms.Label lblTotal;
-        private System.Windows.Forms.Button btnCerrar;
     }
 }
