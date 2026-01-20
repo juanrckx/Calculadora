@@ -137,19 +137,27 @@ namespace ClienteApp.Services
             try
             {
                 var historialItems = new List<HistorialItem>();
-                var lineas = contenido.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (var linea in lineas)
+                
+                try
                 {
-                    var partes = linea.Split('|');
-                    if (partes.Length >= 3)
+                    historialItems = JsonConvert.DeserializeObject<List<HistorialItem>>(contenido);
+                }
+                catch (JsonException)
+                {
+                    var lineas = contenido.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var linea in lineas)
                     {
-                        historialItems.Add(new HistorialItem
+                        var partes = linea.Split('|');
+                        if (partes.Length >= 3)
                         {
-                            Fecha = partes[0],
-                            Expresion = partes[1],
-                            Resultado = partes[2]
-                        });
+                            historialItems.Add(new HistorialItem
+                            {
+                                Fecha = partes[0],
+                                Expresion = partes[1],
+                                Resultado = partes[2]
+                            });
+                        }
                     }
                 }
 

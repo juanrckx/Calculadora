@@ -147,23 +147,36 @@ namespace Servidor.Network
                 Log($"Enviando historial para cliente {_idCliente}");
 
                 var registros = _csvManager.ObtenerRegistrosPorCliente(_idCliente);
-                var historial = new StringBuilder();
+                var historialItems = new List<HistorialItem>();
 
                 foreach (var registro in registros)
                 {
-                    historial.AppendLine($"{registro[3]}|{registro[1]}|{registro[2]}");
+                    // registro[0] = ID_Cliente, registro[1] = Expresion, 
+                    // registro[2] = Resultado, registro[3] = Fecha
+                    if (registro.Length >= 4)
+                    {
+                        historialItems.Add(new HistorialItem
+                        {
+                            Fecha = registro[3],
+                            Expresion = registro[1],
+                            Resultado = registro[2]
+                        });
+                    }
                 }
+
+                // Serializar a JSON
+                string historialJson = JsonConvert.SerializeObject(historialItems);
 
                 var mensajeHistorial = new Mensaje
                 {
                     Tipo = TipoMensaje.HistorialEnviado,
                     IdCliente = _idCliente,
-                    Contenido = historial.ToString(),
+                    Contenido = historialJson,
                     Fecha = DateTime.Now
                 };
 
                 await EnviarMensaje(mensajeHistorial);
-                Log($"Historial enviado ({registros.Count} registros)");
+                Log($"Historial enviado ({historialItems.Count} registros)");
             }
             catch (Exception ex)
             {
@@ -171,7 +184,7 @@ namespace Servidor.Network
                 await EnviarError($"Error obteniendo historial: {ex.Message}");
             }
         }
-
+        
         private async Task EnviarResultado(string resultado)
         {
             var mensaje = new Mensaje
