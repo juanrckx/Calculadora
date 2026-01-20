@@ -1,43 +1,47 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace ServidorCore.ExpressionTree
 {
-    // Clase principal que representa el árbol de expresión
     public class ArbolExpresion
     {
         private Nodo raiz;
         
-        // Constructor: crea el árbol a partir de una expresión infija
         public ArbolExpresion(string expresionInfija)
         {
-            // 1. Convertir a postfijo
-            List<string> postfijo = ConversorPostfijo.InfijoAPostfijo(expresionInfija);
-            
-            // 2. Construir árbol desde postfijo
-            raiz = ConstruirDesdePostfijo(postfijo);
+            try
+            {
+                // 1. Convertir a postfijo
+                List<string> postfijo = ConversorPostfijo.InfijoAPostfijo(expresionInfija);
+                
+                // 2. Construir árbol desde postfijo
+                raiz = ConstruirDesdePostfijo(postfijo);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"Error al construir árbol: {ex.Message}", ex);
+            }
         }
         
-        // Construye el árbol a partir de una expresión postfija
         private Nodo ConstruirDesdePostfijo(List<string> postfijo)
         {
             Stack<Nodo> pila = new Stack<Nodo>();
             
             foreach (string token in postfijo)
             {
-                if (double.TryParse(token, out double valor))
+                if (EsNumero(token))
                 {
-                    // Es un número: crear nodo operando y pushear
+                    // Usar CultureInfo.InvariantCulture para garantizar que . sea separador decimal
+                    double valor = double.Parse(token, CultureInfo.InvariantCulture);
                     pila.Push(new NodoOperando(valor));
                 }
                 else
                 {
-                    // Es un operador: crear nodo operador
                     NodoOperador nodoOperador = new NodoOperador(token);
                     
                     if (token == "~")
                     {
-                        // NOT es un operador unario: solo necesita un operando
                         if (pila.Count < 1)
                             throw new ArgumentException("Expresión inválida: NOT sin operando");
                         
@@ -45,9 +49,8 @@ namespace ServidorCore.ExpressionTree
                     }
                     else
                     {
-                        // Operadores binarios: necesitan dos operandos
                         if (pila.Count < 2)
-                            throw new ArgumentException("Expresión inválida");
+                            throw new ArgumentException("Expresión inválida: faltan operandos");
                         
                         nodoOperador.Derecho = pila.Pop();
                         nodoOperador.Izquierdo = pila.Pop();
@@ -57,23 +60,59 @@ namespace ServidorCore.ExpressionTree
                 }
             }
             
-            // Al final, debe quedar exactamente un nodo en la pila
             if (pila.Count != 1)
-                throw new ArgumentException("Expresión inválida");
+                throw new ArgumentException($"Expresión inválida: {pila.Count} elementos en pila");
             
             return pila.Pop();
         }
         
-        // Evalúa la expresión
+        private bool EsNumero(string token)
+        {
+            // Usar el mismo método de validación que ConversorPostfijo
+            token = token.Trim();
+            
+            if (string.IsNullOrEmpty(token))
+                return false;
+                
+            bool tienePunto = false;
+            bool tieneDigito = false;
+            
+            foreach (char c in token)
+            {
+                if (char.IsDigit(c))
+                {
+                    tieneDigito = true;
+                }
+                else if (c == '.')
+                {
+                    if (tienePunto)
+                        return false;
+                    tienePunto = true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            
+            return tieneDigito;
+        }
+        
         public double Evaluar()
         {
             if (raiz == null)
-                return 0;
+                throw new InvalidOperationException("Árbol vacío");
                 
-            return raiz.Evaluar();
+            try
+            {
+                return raiz.Evaluar();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Error al evaluar: {ex.Message}", ex);
+            }
         }
         
-        // Muestra el árbol (útil para depurar)
         public string MostrarArbol()
         {
             if (raiz == null)

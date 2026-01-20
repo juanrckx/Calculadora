@@ -143,7 +143,7 @@ namespace ClienteApp.Forms
             btnParentesisDer.Click += (s, e) => txtExpresion.Text += ")";
 
             // Punto decimal
-            btonPunto.Click += (s, e) => txtExpresion.Text += ".";
+            btnPunto.Click += (s, e) => txtExpresion.Text += ".";
             
             // Limpiar
             btnLimpiar.Click += (s, e) => txtExpresion.Clear();

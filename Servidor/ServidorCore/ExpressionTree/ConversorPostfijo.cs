@@ -1,72 +1,63 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace ServidorCore.ExpressionTree
 {
-    // Convierte expresiones infijas (3+4) a postfijas (3 4 +)
     public class ConversorPostfijo
     {
         // Tabla de precedencia de operadores
-        // Mayor número = mayor precedencia
         private static Dictionary<string, int> precedencia = new Dictionary<string, int>
         {
             { "~", 4 },  // NOT (más alta)
             { "**", 3 }, // Potencia
             { "*", 2 }, { "/", 2 }, { "%", 2 },
             { "+", 1 }, { "-", 1 },
-            { "&", 0 }, { "|", 0 }, { "^", 0 } // Operadores lógicos (menor)
+            { "&", 0 }, { "|", 0 }, { "^", 0 } // Operadores lógicos
         };
         
-        // Convierte expresión infija a postfija usando algoritmo Shunting Yard
         public static List<string> InfijoAPostfijo(string expresion)
         {
             List<string> resultado = new List<string>();
             Stack<string> pilaOperadores = new Stack<string>();
             
-            // Primero tokenizamos la expresión
             List<string> tokens = Tokenizar(expresion);
             
             foreach (string token in tokens)
             {
                 if (EsNumero(token))
                 {
-                    // Números van directo al resultado
                     resultado.Add(token);
                 }
                 else if (token == "(")
                 {
-                    // Paréntesis izquierdo va a la pila
                     pilaOperadores.Push(token);
                 }
                 else if (token == ")")
                 {
-                    // Sacamos operadores hasta encontrar el paréntesis izquierdo
                     while (pilaOperadores.Count > 0 && pilaOperadores.Peek() != "(")
                     {
                         resultado.Add(pilaOperadores.Pop());
                     }
                     
-                    // Removemos el "("
                     if (pilaOperadores.Count > 0)
                         pilaOperadores.Pop();
                 }
                 else if (EsOperador(token))
                 {
-                    // Si es operador, sacamos operadores con mayor o igual precedencia
                     while (pilaOperadores.Count > 0 && 
                            pilaOperadores.Peek() != "(" && 
+                           precedencia.ContainsKey(pilaOperadores.Peek()) &&
                            precedencia[pilaOperadores.Peek()] >= precedencia[token])
                     {
                         resultado.Add(pilaOperadores.Pop());
                     }
                     
-                    // Pusheamos el nuevo operador
                     pilaOperadores.Push(token);
                 }
             }
             
-            // Sacamos todos los operadores restantes
             while (pilaOperadores.Count > 0)
             {
                 resultado.Add(pilaOperadores.Pop());
@@ -75,53 +66,70 @@ namespace ServidorCore.ExpressionTree
             return resultado;
         }
         
-        // Separa la expresión en tokens (números, operadores, paréntesis)
         private static List<string> Tokenizar(string expresion)
         {
             List<string> tokens = new List<string>();
             StringBuilder numeroActual = new StringBuilder();
+            bool enNumero = false;
             
             for (int i = 0; i < expresion.Length; i++)
             {
                 char c = expresion[i];
                 
+                // Verificar si es parte de un número (dígito o punto decimal)
                 if (char.IsDigit(c) || c == '.')
                 {
-                    // Es parte de un número
-                    numeroActual.Append(c);
+                    if (!enNumero && c == '.')
+                    {
+                        // Punto al inicio del número
+                        numeroActual.Append("0.");
+                        enNumero = true;
+                    }
+                    else
+                    {
+                        numeroActual.Append(c);
+                        enNumero = true;
+                    }
                 }
-                else
+                else if (char.IsWhiteSpace(c))
                 {
-                    // Si teníamos un número en construcción, lo agregamos
-                    if (numeroActual.Length > 0)
+                    // Finalizar número actual si existe
+                    if (enNumero)
                     {
                         tokens.Add(numeroActual.ToString());
                         numeroActual.Clear();
+                        enNumero = false;
+                    }
+                }
+                else
+                {
+                    // Finalizar número actual si existe
+                    if (enNumero)
+                    {
+                        tokens.Add(numeroActual.ToString());
+                        numeroActual.Clear();
+                        enNumero = false;
                     }
                     
-                    // Si no es espacio, procesamos el carácter
-                    if (!char.IsWhiteSpace(c))
+                    // Verificar operadores de dos caracteres
+                    if (i + 1 < expresion.Length)
                     {
-                        // Verificamos si es un operador de dos caracteres
-                        if (i + 1 < expresion.Length)
+                        string dosCaracteres = c.ToString() + expresion[i + 1];
+                        if (dosCaracteres == "**")
                         {
-                            string dosCaracteres = c.ToString() + expresion[i + 1];
-                            if (dosCaracteres == "**" || dosCaracteres == "||")
-                            {
-                                tokens.Add(dosCaracteres);
-                                i++; // Saltamos el siguiente carácter
-                                continue;
-                            }
+                            tokens.Add(dosCaracteres);
+                            i++; // Saltar siguiente carácter
+                            continue;
                         }
-                        
-                        // Operadores de un carácter
-                        tokens.Add(c.ToString());
                     }
+                    
+                    // Añadir operador de un carácter
+                    tokens.Add(c.ToString());
                 }
             }
             
-            // Si quedó un número al final
-            if (numeroActual.Length > 0)
+            // Añadir último número si existe
+            if (enNumero)
             {
                 tokens.Add(numeroActual.ToString());
             }
@@ -131,12 +139,41 @@ namespace ServidorCore.ExpressionTree
         
         private static bool EsNumero(string token)
         {
-            return double.TryParse(token, out _);
+            // Limpiar token: eliminar espacios
+            token = token.Trim();
+            
+            // Verificar si es número válido
+            if (string.IsNullOrEmpty(token))
+                return false;
+                
+            // Verificar formato válido: dígitos opcionales + . + dígitos opcionales
+            bool tienePunto = false;
+            bool tieneDigito = false;
+            
+            foreach (char c in token)
+            {
+                if (char.IsDigit(c))
+                {
+                    tieneDigito = true;
+                }
+                else if (c == '.')
+                {
+                    if (tienePunto) // Doble punto -> inválido
+                        return false;
+                    tienePunto = true;
+                }
+                else
+                {
+                    return false; // Carácter inválido
+                }
+            }
+            
+            return tieneDigito; // Debe tener al menos un dígito
         }
         
         private static bool EsOperador(string token)
         {
-            return precedencia.ContainsKey(token);
+            return precedencia.ContainsKey(token) || token == "(" || token == ")";
         }
     }
 }
