@@ -59,6 +59,7 @@ namespace ClienteApp.Forms
             this.btnLimpiar = new System.Windows.Forms.Button();
             this.btnBorrar = new System.Windows.Forms.Button();
             this.btnPunto = new System.Windows.Forms.Button();
+            this.btnNegativo = new System.Windows.Forms.Button();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.lblExpresion = new System.Windows.Forms.Label();
             this.lblResultado = new System.Windows.Forms.Label();
@@ -132,7 +133,7 @@ namespace ClienteApp.Forms
             // btnNum0
             // 
             this.btnNum0.Font = new System.Drawing.Font("Arial", 10F);
-            this.btnNum0.Location = new System.Drawing.Point(50, 150);
+            this.btnNum0.Location = new System.Drawing.Point(50, 140);
             this.btnNum0.Name = "btnNum0";
             this.btnNum0.Size = new System.Drawing.Size(50, 40);
             this.btnNum0.TabIndex = 6;
@@ -332,7 +333,7 @@ namespace ClienteApp.Forms
             // btnParentesisIzq
             // 
             this.btnParentesisIzq.Font = new System.Drawing.Font("Arial", 10F);
-            this.btnParentesisIzq.Location = new System.Drawing.Point(110, 150);
+            this.btnParentesisIzq.Location = new System.Drawing.Point(110, 140);
             this.btnParentesisIzq.Name = "btnParentesisIzq";
             this.btnParentesisIzq.Size = new System.Drawing.Size(50, 40);
             this.btnParentesisIzq.TabIndex = 26;
@@ -342,7 +343,7 @@ namespace ClienteApp.Forms
             // btnParentesisDer
             // 
             this.btnParentesisDer.Font = new System.Drawing.Font("Arial", 10F);
-            this.btnParentesisDer.Location = new System.Drawing.Point(170, 150);
+            this.btnParentesisDer.Location = new System.Drawing.Point(170, 140);
             this.btnParentesisDer.Name = "btnParentesisDer";
             this.btnParentesisDer.Size = new System.Drawing.Size(50, 40);
             this.btnParentesisDer.TabIndex = 27;
@@ -353,7 +354,7 @@ namespace ClienteApp.Forms
             // 
             this.btnLimpiar.BackColor = System.Drawing.Color.LightCoral;
             this.btnLimpiar.Font = new System.Drawing.Font("Arial", 10F);
-            this.btnLimpiar.Location = new System.Drawing.Point(290, 150);
+            this.btnLimpiar.Location = new System.Drawing.Point(290, 190);
             this.btnLimpiar.Name = "btnLimpiar";
             this.btnLimpiar.Size = new System.Drawing.Size(50, 40);
             this.btnLimpiar.TabIndex = 28;
@@ -364,7 +365,7 @@ namespace ClienteApp.Forms
             // 
             this.btnBorrar.BackColor = System.Drawing.Color.LightBlue;
             this.btnBorrar.Font = new System.Drawing.Font("Arial", 10F);
-            this.btnBorrar.Location = new System.Drawing.Point(290, 190);
+            this.btnBorrar.Location = new System.Drawing.Point(350, 20);
             this.btnBorrar.Name = "btnBorrar";
             this.btnBorrar.Size = new System.Drawing.Size(50, 40);
             this.btnBorrar.TabIndex = 29;
@@ -374,12 +375,22 @@ namespace ClienteApp.Forms
             // btnPunto
             // 
             this.btnPunto.Font = new System.Drawing.Font("Arial", 10F);
-            this.btnPunto.Location = new System.Drawing.Point(230, 150);
+            this.btnPunto.Location = new System.Drawing.Point(230, 140);
             this.btnPunto.Name = "btnPunto";
             this.btnPunto.Size = new System.Drawing.Size(50, 40);
             this.btnPunto.TabIndex = 30;
             this.btnPunto.Text = ".";
             this.btnPunto.UseVisualStyleBackColor = true;
+            //
+            // btnNegativo
+            // 
+            this.btnNegativo.Font = new System.Drawing.Font("Arial", 10F);
+            this.btnNegativo.Location = new System.Drawing.Point(290, 140);
+            this.btnNegativo.Name = "btnNegativo";
+            this.btnNegativo.Size = new System.Drawing.Size(50, 40);
+            this.btnNegativo.TabIndex = 30;
+            this.btnNegativo.Text = "u";
+            this.btnNegativo.UseVisualStyleBackColor = true;
             // 
             // lblTitulo
             // 
@@ -451,6 +462,7 @@ namespace ClienteApp.Forms
             this.panelBotones.Controls.Add(this.btnPotencia);
             this.panelBotones.Controls.Add(this.btnNum0);
             this.panelBotones.Controls.Add(this.btnPunto);
+            this.panelBotones.Controls.Add(this.btnNegativo);
             this.panelBotones.Controls.Add(this.btnParentesisIzq);
             this.panelBotones.Controls.Add(this.btnParentesisDer);
             this.panelBotones.Controls.Add(this.btnLimpiar);
@@ -519,6 +531,7 @@ namespace ClienteApp.Forms
         private System.Windows.Forms.Button btnLimpiar;
         private System.Windows.Forms.Button btnBorrar;
         private System.Windows.Forms.Button btnPunto;
+        private System.Windows.Forms.Button btnNegativo;
         private System.Windows.Forms.Label lblTitulo;
         private System.Windows.Forms.Label lblExpresion;
         private System.Windows.Forms.Label lblResultado;

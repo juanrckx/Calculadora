@@ -143,7 +143,7 @@ namespace ServidorCore.ExpressionTree
                     // Añadir operador de un carácter
                     string token = c.ToString();
 
-                    if (tokens == "-")
+                    if (token == "-")
                     {
                         bool esUnario = false;
                         if (ultimoToken == null)
@@ -161,7 +161,7 @@ namespace ServidorCore.ExpressionTree
                         }
                     }
 
-                    tokens.Add(tokens);
+                    tokens.Add(token);
                     ultimoToken = token;
                 }
             }
