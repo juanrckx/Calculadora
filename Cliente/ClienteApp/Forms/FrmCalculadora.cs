@@ -12,26 +12,6 @@ namespace ClienteApp.Forms
         private string _servidorIp = "127.0.0.1";
         private int _puerto = 8080;
 
-        // Controles
-        private TextBox txtExpresion;
-        private TextBox txtResultado;
-        private Button btnConectar;
-        private Button btnEvaluar;
-        private Button btnHistorial;
-        private Label lblEstado;
-        
-        // Botones numéricos
-        private Button btnNum0, btnNum1, btnNum2, btnNum3, btnNum4, 
-                       btnNum5, btnNum6, btnNum7, btnNum8, btnNum9;
-        
-        // Botones de operadores
-        private Button btnSuma, btnResta, btnMulti, btnDiv, btnMod, 
-                       btnPotencia, btnAnd, btnOr, btnXor, btnNot;
-        
-        // Botones adicionales
-        private Button btnParentesisIzq, btnParentesisDer, 
-                       btnLimpiar, btnBorrar, btnPunto;
-
         public FrmCalculadora()
         {
             InitializeComponent();
@@ -153,7 +133,7 @@ namespace ClienteApp.Forms
             btnDiv.Click += (s, e) => txtExpresion.Text += " / ";
             btnMod.Click += (s, e) => txtExpresion.Text += " % ";
             btnPotencia.Click += (s, e) => txtExpresion.Text += "**";
-            btnAnd.Click += (s, e) => txtExpresion.Text += " & ";
+            btnAnd.Click += (s, e) => txtExpresion.Text += " && ";
             btnOr.Click += (s, e) => txtExpresion.Text += " | ";
             btnXor.Click += (s, e) => txtExpresion.Text += " ^ ";
             btnNot.Click += (s, e) => txtExpresion.Text += "~";
@@ -161,6 +141,9 @@ namespace ClienteApp.Forms
             // Paréntesis
             btnParentesisIzq.Click += (s, e) => txtExpresion.Text += "(";
             btnParentesisDer.Click += (s, e) => txtExpresion.Text += ")";
+
+            // Punto decimal
+            btonPunto.Click += (s, e) => txtExpresion.Text += ".";
             
             // Limpiar
             btnLimpiar.Click += (s, e) => txtExpresion.Clear();

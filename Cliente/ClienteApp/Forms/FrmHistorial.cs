@@ -9,11 +9,6 @@ namespace ClienteApp.Forms
     {
         private List<HistorialItem> _historial;
         
-        // Controles
-        private DataGridView dgvHistorial;
-        private Label lblTotal;
-        private Button btnCerrar;
-        
         public FrmHistorial(List<HistorialItem> historial)
         {
             InitializeComponent();
