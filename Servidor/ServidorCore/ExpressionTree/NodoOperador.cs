@@ -67,6 +67,9 @@ namespace ServidorCore.ExpressionTree
                     // Para NOT, solo usamos el hijo derecho
                     derBool = valorDerecho != 0;
                     return (!derBool) ? 1 : 0;
+
+                case "u":
+                    return -valorDerecho;
                     
                 default:
                     throw new ArgumentException($"Operador desconocido: {operador}");

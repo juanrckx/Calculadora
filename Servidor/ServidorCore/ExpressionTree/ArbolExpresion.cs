@@ -40,7 +40,7 @@ namespace ServidorCore.ExpressionTree
                 {
                     NodoOperador nodoOperador = new NodoOperador(token);
                     
-                    if (token == "~")
+                    if (token == "~" || token == "u")
                     {
                         if (pila.Count < 1)
                             throw new ArgumentException("Expresión inválida: NOT sin operando");

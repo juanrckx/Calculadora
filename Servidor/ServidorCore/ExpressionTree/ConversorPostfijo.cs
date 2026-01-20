@@ -10,7 +10,8 @@ namespace ServidorCore.ExpressionTree
         // Tabla de precedencia de operadores
         private static Dictionary<string, int> precedencia = new Dictionary<string, int>
         {
-            { "~", 4 },  // NOT (más alta)
+            { "~", 5 }, // NOT (más alta)
+            { "u", 4}, // Operador unario negativo
             { "**", 3 }, // Potencia
             { "*", 2 }, { "/", 2 }, { "%", 2 },
             { "+", 1 }, { "-", 1 },
@@ -44,15 +45,30 @@ namespace ServidorCore.ExpressionTree
                     if (pilaOperadores.Count > 0)
                         pilaOperadores.Pop();
                 }
+
                 else if (EsOperador(token))
                 {
-                    while (pilaOperadores.Count > 0 && 
+                    if (token == "u" || token == "~")
+                    {
+                        while (pilaOperadores.Count > 0 && 
                            pilaOperadores.Peek() != "(" && 
                            precedencia.ContainsKey(pilaOperadores.Peek()) &&
                            precedencia[pilaOperadores.Peek()] >= precedencia[token])
-                    {
+                        {
                         resultado.Add(pilaOperadores.Pop());
+                        }
                     }
+
+                    else
+                    {
+                        while (pilaOperadores.Count > 0 && 
+                            pilaOperadores.Peek() != "(" && 
+                            precedencia.ContainsKey(pilaOperadores.Peek()) &&
+                            precedencia[pilaOperadores.Peek()] >= precedencia[token])
+                        {
+                            resultado.Add(pilaOperadores.Pop());
+                        }
+                    }   
                     
                     pilaOperadores.Push(token);
                 }
@@ -71,6 +87,7 @@ namespace ServidorCore.ExpressionTree
             List<string> tokens = new List<string>();
             StringBuilder numeroActual = new StringBuilder();
             bool enNumero = false;
+            string ultimoToken = null; // Para determinar si un '-' es unario
             
             for (int i = 0; i < expresion.Length; i++)
             {
@@ -124,7 +141,28 @@ namespace ServidorCore.ExpressionTree
                     }
                     
                     // Añadir operador de un carácter
-                    tokens.Add(c.ToString());
+                    string token = c.ToString();
+
+                    if (tokens == "-")
+                    {
+                        bool esUnario = false;
+                        if (ultimoToken == null)
+                        {
+                            esUnario = true;
+                        }
+                        else if (EsOperadorBinario(ultimoToken) || ultimoToken == "(")
+                        {
+                            esUnario = true;
+                        }
+
+                        if (esUnario)
+                        {
+                            token = "u";
+                        }
+                    }
+
+                    tokens.Add(tokens);
+                    ultimoToken = token;
                 }
             }
             
@@ -174,6 +212,14 @@ namespace ServidorCore.ExpressionTree
         private static bool EsOperador(string token)
         {
             return precedencia.ContainsKey(token) || token == "(" || token == ")";
+        }
+
+        private static bool EsOperadorBinario(string token)
+        {
+            // Lista de operadores binarios (excluyendo unarios)
+            return token == "+" || token == "-" || token == "*" || 
+                   token == "/" || token == "%" || token == "**" || 
+                   token == "&" || token == "|" || token == "^";
         }
     }
 }
