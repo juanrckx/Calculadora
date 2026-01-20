@@ -6,6 +6,7 @@ using Comun.Utils;
 using ServidorCore.ExpressionTree;
 using ServidorCore.Data;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Servidor.Network
 {
@@ -184,7 +185,7 @@ namespace Servidor.Network
                 await EnviarError($"Error obteniendo historial: {ex.Message}");
             }
         }
-        
+
         private async Task EnviarResultado(string resultado)
         {
             var mensaje = new Mensaje
