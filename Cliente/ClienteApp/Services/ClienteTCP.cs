@@ -3,6 +3,7 @@ using Comun.Models;
 using Comun.Utils;
 using System.Text;
 using Comun.Enums;
+using Newtonsoft.Json;
 
 namespace ClienteApp.Services
 {
