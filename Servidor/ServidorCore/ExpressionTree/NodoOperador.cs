@@ -39,14 +39,13 @@ namespace ServidorCore.ExpressionTree
                     return valorIzquierdo / valorDerecho;
                     
                 case "%":
+                    if (valorDerecho == 0)
+                        throw new DivideByZeroException("No se puede dividir entre cero");
                     return valorIzquierdo % valorDerecho;
                     
                 case "**":
                     // Potencia: 2**3 = 8
-                    double resultado = 1;
-                    for (int i = 0; i < valorDerecho; i++)
-                        resultado *= valorIzquierdo;
-                    return resultado;
+                    return Math.Pow(valorIzquierdo, valorDerecho);
                     
                 case "&": // AND lógico
                     // Consideramos 0 como false, cualquier otro como true
