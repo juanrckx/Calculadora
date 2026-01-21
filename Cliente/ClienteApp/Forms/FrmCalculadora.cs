@@ -139,6 +139,7 @@ namespace ClienteApp.Forms
             btnOr.Click += (s, e) => txtExpresion.Text += " | ";
             btnXor.Click += (s, e) => txtExpresion.Text += " ^ ";
             btnNot.Click += (s, e) => txtExpresion.Text += "~";
+            btnNegativo.Click += (s, e) => txtExpresion.Text += "u";
             
             // Paréntesis
             btnParentesisIzq.Click += (s, e) => txtExpresion.Text += "(";
@@ -149,6 +150,7 @@ namespace ClienteApp.Forms
             
             // Limpiar
             btnLimpiar.Click += (s, e) => txtExpresion.Clear();
+            btnLimpiar.Click += (s, e) => txtResultado.Clear();
             btnBorrar.Click += (s, e) => {
                 if (txtExpresion.Text.Length > 0)
                     txtExpresion.Text = txtExpresion.Text.Substring(0, txtExpresion.Text.Length - 1);
