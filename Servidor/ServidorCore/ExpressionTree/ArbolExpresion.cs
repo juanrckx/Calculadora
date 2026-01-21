@@ -26,13 +26,13 @@ namespace ServidorCore.ExpressionTree
         
         private Nodo ConstruirDesdePostfijo(List<string> postfijo)
         {
-            Stack<Nodo> pila = new Stack<Nodo>();
+            Stack<Nodo> pila = new Stack<Nodo>();       // Pila para construir el árbol
             
             foreach (string token in postfijo)
             {
                 if (EsNumero(token))
                 {
-                    // Usar CultureInfo.InvariantCulture para garantizar que . sea separador decimal
+                    // Si es número, crear nodo operando
                     double valor = double.Parse(token, CultureInfo.InvariantCulture);
                     pila.Push(new NodoOperando(valor));
                 }
@@ -45,30 +45,30 @@ namespace ServidorCore.ExpressionTree
                         if (pila.Count < 1)
                             throw new ArgumentException("Expresión inválida: NOT sin operando");
                         
-                        nodoOperador.Derecho = pila.Pop();
+                        nodoOperador.Derecho = pila.Pop();      // El operador va en el hijo derecho
                     }
-                    else
+                    else        // Operadores binarios
                     {
                         if (pila.Count < 2)
                             throw new ArgumentException("Expresión inválida: faltan operandos");
                         
-                        nodoOperador.Derecho = pila.Pop();
-                        nodoOperador.Izquierdo = pila.Pop();
+                        nodoOperador.Derecho = pila.Pop();      // Último operando en la pila = hijo derecho
+                        nodoOperador.Izquierdo = pila.Pop();    // Penúltimo operando = hijo izquierdo
                     }
                     
-                    pila.Push(nodoOperador);
+                    pila.Push(nodoOperador);                    // Apilar el operador (que ahora es un nodo con hijos)
                 }
             }
             
             if (pila.Count != 1)
                 throw new ArgumentException($"Expresión inválida: {pila.Count} elementos en pila");
             
-            return pila.Pop();
+            return pila.Pop();      // La raíz del árbol es el último elemento de la pila
         }
         
         private bool EsNumero(string token)
         {
-            // Usar el mismo método de validación que ConversorPostfijo
+            // Verificar si el token es un número válido (entero o decimal)
             token = token.Trim();
             
             if (string.IsNullOrEmpty(token))
@@ -85,17 +85,17 @@ namespace ServidorCore.ExpressionTree
                 }
                 else if (c == '.')
                 {
-                    if (tienePunto)
+                    if (tienePunto)     // Doble punto no permitido
                         return false;
                     tienePunto = true;
                 }
                 else
                 {
-                    return false;
+                    return false;       // Carácter inválido
                 }
             }
             
-            return tieneDigito;
+            return tieneDigito;         // Debe tener al menos un dígito
         }
         
         public double Evaluar()
@@ -105,7 +105,7 @@ namespace ServidorCore.ExpressionTree
                 
             try
             {
-                return raiz.Evaluar();
+                return raiz.Evaluar();      // Evaluación recursiva
             }
             catch (Exception ex)
             {

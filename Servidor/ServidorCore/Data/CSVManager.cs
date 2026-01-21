@@ -7,13 +7,13 @@ namespace ServidorCore.Data
 {
     public class CSVManager
     {
-        private string _filePath;
+        private string _filePath;   // Ruta del archivo CSV
 
         public CSVManager(string filePath)
         {
             _filePath = filePath;
 
-            // Crear archivo si no existe
+            // Crear archivo si no existe (con encabezado)
             if (!File.Exists(_filePath))
             {
                 File.WriteAllText(_filePath, "ID_Cliente,Expresion,Resultado,Fecha\n");
@@ -22,8 +22,9 @@ namespace ServidorCore.Data
 
         public void GuardarRegistro(string idCliente, string expresion, string resultado)
         {
+            // Reempalzar comas en la expresión para no romper el formato CSV
             string registro = $"{idCliente},{expresion.Replace(",", ";")},{resultado},{DateTime.Now:yyyy-MM-dd HH:mm:ss}\n";
-            File.AppendAllText(_filePath, registro);
+            File.AppendAllText(_filePath, registro);        // Añadir al final del archivo
         }
 
         public List<string[]> ObtenerRegistrosPorCliente(string idCliente)
@@ -32,6 +33,7 @@ namespace ServidorCore.Data
 
             if (File.Exists(_filePath))
             {
+                // Leer todas las líneas y saltar la primera (el encabezado)
                 var lineas = File.ReadAllLines(_filePath).Skip(1);  // Saltar encabezado
 
                 foreach (var linea in lineas)

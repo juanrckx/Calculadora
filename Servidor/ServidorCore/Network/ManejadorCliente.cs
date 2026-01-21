@@ -12,11 +12,11 @@ namespace Servidor.Network
 {
     public class ManejadorCliente
     {
-        private TcpClient _cliente;
-        private NetworkStream _stream;
-        private string _idCliente;
-        private CSVManager _csvManager;
-        private readonly IPEndPoint _clienteEndpoint;
+        private TcpClient _cliente;     // Cliente TCP conectado
+        private NetworkStream _stream;  // Stream de red para enviar/recibir datos
+        private string _idCliente;      // ID único del cliente (generado con Guid)
+        private CSVManager _csvManager; // Manager de CSV
+        private readonly IPEndPoint _clienteEndpoint;   // Dirección IP y puerto del cliente
 
         // Eventos para logging
         public event Action<string> OnLogMensaje;
@@ -25,10 +25,10 @@ namespace Servidor.Network
         public ManejadorCliente(TcpClient cliente, CSVManager csvManager)
         {
             _cliente = cliente;
-            _stream = cliente.GetStream();
-            _idCliente = Guid.NewGuid().ToString();
+            _stream = cliente.GetStream();      // Obtener el stream de comunicación
+            _idCliente = Guid.NewGuid().ToString(); // Generar un ID único
             _csvManager = csvManager;
-            _clienteEndpoint = (IPEndPoint)cliente.Client.RemoteEndPoint;
+            _clienteEndpoint = (IPEndPoint)cliente.Client.RemoteEndPoint;   // Obtener IP y puerto
 
             Log($"Cliente conectado desde {_clienteEndpoint.Address}:{_clienteEndpoint.Port}");
         }
@@ -121,10 +121,10 @@ namespace Servidor.Network
             {
                 Log($"Evaluando expresión: {expresion}");
 
-                // Usar el árbol de expresión de tu compañero
+                // Crear árbol de expresión (usa ConversorPostfijo internamente)
                 var arbol = new ArbolExpresion(expresion);
                 
-                // Evaluar
+                // Evaluar el árbol (recursivo)
                 double resultado = arbol.Evaluar();
                 Log($"Resultado: {resultado}");
 
@@ -147,6 +147,7 @@ namespace Servidor.Network
             {
                 Log($"Enviando historial para cliente {_idCliente}");
 
+                // Obtener registros del cliente desde CSV
                 var registros = _csvManager.ObtenerRegistrosPorCliente(_idCliente);
                 var historialItems = new List<HistorialItem>();
 
@@ -216,11 +217,12 @@ namespace Servidor.Network
         {
             try
             {
-                byte[] buffer = new byte[4096];
+                byte[] buffer = new byte[4096];     // Buffer de 4KB
                 int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
 
                 if (bytesRead > 0)
                 {
+                    // Deserializar bytes a objeto Mensaje
                     return Serializador.Deserializar(buffer.Take(bytesRead).ToArray());
                 }
             }
@@ -236,8 +238,8 @@ namespace Servidor.Network
         {
             try
             {
-                byte[] datos = Serializador.Serializar(mensaje);
-                await _stream.WriteAsync(datos, 0, datos.Length);
+                byte[] datos = Serializador.Serializar(mensaje);    // Serializar a bytes
+                await _stream.WriteAsync(datos, 0, datos.Length);   // Enviar por red
             }
             catch (Exception ex)
             {
@@ -268,7 +270,7 @@ namespace Servidor.Network
             Console.WriteLine(log);
         }
 
-        // Propiedades públicas
+        // Propiedades públicas (solo lectura)
         public string IdCliente => _idCliente;
         public IPEndPoint ClienteEndpoint => _clienteEndpoint;
         public bool EstaConectado => _cliente?.Connected == true;
