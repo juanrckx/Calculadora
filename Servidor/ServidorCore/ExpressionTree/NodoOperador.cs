@@ -3,7 +3,7 @@ namespace ServidorCore.ExpressionTree
     // Representa un operador en el árbol
     public class NodoOperador : Nodo
     {
-        private string operador;
+        private string operador;        // Símbolo del operador (ej: "+", "*")
         
         public NodoOperador(string operador)
         {
@@ -18,7 +18,7 @@ namespace ServidorCore.ExpressionTree
             if (Izquierdo != null)
                 valorIzquierdo = Izquierdo.Evaluar();
             
-            // Luego evaluamos el hijo derecho
+            // Luego evaluamos el hijo derecho (siempre existe)
             double valorDerecho = Derecho.Evaluar();
             
             // Aplicamos la operación correspondiente
@@ -81,6 +81,7 @@ namespace ServidorCore.ExpressionTree
             return operador;
         }
         
+        // Sobreescribir Mostrar para representar el árbol jerárquicamente
         public override string Mostrar(int nivel = 0)
         {
             string espacio = new string(' ', nivel * 4);

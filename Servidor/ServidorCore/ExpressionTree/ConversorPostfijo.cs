@@ -20,60 +20,50 @@ namespace ServidorCore.ExpressionTree
         
         public static List<string> InfijoAPostfijo(string expresion)
         {
-            List<string> resultado = new List<string>();
-            Stack<string> pilaOperadores = new Stack<string>();
+            List<string> resultado = new List<string>();    // Lista postfija final
+
+            Stack<string> pilaOperadores = new Stack<string>(); // Pila de operadores
             
-            List<string> tokens = Tokenizar(expresion);
+            List<string> tokens = Tokenizar(expresion);         // Dividir expresión en tokens
             
             foreach (string token in tokens)
             {
                 if (EsNumero(token))
                 {
-                    resultado.Add(token);
+                    resultado.Add(token);                       // Números van directo al resultado
                 }
                 else if (token == "(")
                 {
-                    pilaOperadores.Push(token);
+                    pilaOperadores.Push(token);                 // Paréntesis izquierdo a la pila
                 }
                 else if (token == ")")
                 {
+                    // Sacar operadores hasta encontrar "("
                     while (pilaOperadores.Count > 0 && pilaOperadores.Peek() != "(")
                     {
                         resultado.Add(pilaOperadores.Pop());
                     }
                     
                     if (pilaOperadores.Count > 0)
-                        pilaOperadores.Pop();
+                        pilaOperadores.Pop();       // Sacar "("
                 }
 
                 else if (EsOperador(token))
                 {
-                    if (token == "u" || token == "~")
+                    // Sacar operadores con mayor o igual precedencia
+                    while (pilaOperadores.Count > 0 && 
+                        pilaOperadores.Peek() != "(" && 
+                        precedencia.ContainsKey(pilaOperadores.Peek()) &&
+                        precedencia[pilaOperadores.Peek()] >= precedencia[token])
                     {
-                        while (pilaOperadores.Count > 0 && 
-                           pilaOperadores.Peek() != "(" && 
-                           precedencia.ContainsKey(pilaOperadores.Peek()) &&
-                           precedencia[pilaOperadores.Peek()] >= precedencia[token])
-                        {
                         resultado.Add(pilaOperadores.Pop());
-                        }
                     }
-
-                    else
-                    {
-                        while (pilaOperadores.Count > 0 && 
-                            pilaOperadores.Peek() != "(" && 
-                            precedencia.ContainsKey(pilaOperadores.Peek()) &&
-                            precedencia[pilaOperadores.Peek()] >= precedencia[token])
-                        {
-                            resultado.Add(pilaOperadores.Pop());
-                        }
-                    }   
-                    
-                    pilaOperadores.Push(token);
+                
+                    pilaOperadores.Push(token);     // Apilar el operador actual
                 }
             }
             
+            // Sacar operadores restantes
             while (pilaOperadores.Count > 0)
             {
                 resultado.Add(pilaOperadores.Pop());
@@ -98,7 +88,7 @@ namespace ServidorCore.ExpressionTree
                 {
                     if (!enNumero && c == '.')
                     {
-                        // Punto al inicio del número
+                        // Punto al inicio del número (ej: .5 -> 0.5)
                         numeroActual.Append("0.");
                         enNumero = true;
                     }
@@ -138,30 +128,38 @@ namespace ServidorCore.ExpressionTree
                             i++; // Saltar siguiente carácter
                             continue;
                         }
+                        if (dosCaracteres == "--")      // Si hay dos menos -> suma
+                        {
+                            tokens.Add("+");
+                            i++;
+                            continue;
+                        }
                     }
                     
                     // Añadir operador de un carácter
                     string token = c.ToString();
 
-                    if (tokens == "-")
+                    // Detectar operador unario negativo
+                    if (token == "-")
                     {
                         bool esUnario = false;
-                        if (ultimoToken == null)
+                        if (ultimoToken == null)    // Primer token
                         {
                             esUnario = true;
                         }
                         else if (EsOperadorBinario(ultimoToken) || ultimoToken == "(")
                         {
+                            // Si el último token fue un operador o un "(", entonces este "-" es unario
                             esUnario = true;
                         }
 
                         if (esUnario)
                         {
-                            token = "u";
+                            token = "u";    //Cambiar a operador unario
                         }
                     }
 
-                    tokens.Add(tokens);
+                    tokens.Add(token);
                     ultimoToken = token;
                 }
             }

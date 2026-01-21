@@ -24,7 +24,7 @@ namespace ClienteApp.Services
             try
             {
                 _tcpCliente = new TcpClient();
-                await _tcpCliente.ConnectAsync(ip, puerto);
+                await _tcpCliente.ConnectAsync(ip, puerto);     // Conexión asíncrona
                 _stream = _tcpCliente.GetStream();
                 _idCliente = Guid.NewGuid().ToString();
 
@@ -111,7 +111,7 @@ namespace ClienteApp.Services
             switch (mensaje.Tipo)
             {
                 case TipoMensaje.ConexionEstablecida:
-                    _idCliente = mensaje.IdCliente;
+                    _idCliente = mensaje.IdCliente;                             // Actualizar ID con el del servidor
                     OnConexionEstablecida?.Invoke(mensaje.Contenido);
                     OnEstadoCambiado?.Invoke($"Conectado (ID: {_idCliente})");
                     break;
@@ -145,6 +145,7 @@ namespace ClienteApp.Services
                 }
                 catch (JsonException)
                 {
+                    // Si falla, intentar como formato simple
                     var lineas = contenido.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
                     foreach (var linea in lineas)

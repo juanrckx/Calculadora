@@ -3,7 +3,7 @@ using Comun.Enums;
 
 namespace Comun.Models
 {
-    [Serializable]
+    [Serializable]      // Atributo que indica que se puede serializar
     public class Mensaje
     {
         public TipoMensaje Tipo { get; set; }

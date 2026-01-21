@@ -8,10 +8,7 @@ namespace Comun.Models
         public string Expresion { get; set; }
         public string Resultado { get; set; }
 
-        public HistorialItem()
-        {
-            
-        }
+        public HistorialItem() { }  // Constructor vacío necesario para deserialización
 
         public HistorialItem(string fecha, string expresion, string resultado)
         {

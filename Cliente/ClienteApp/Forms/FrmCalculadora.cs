@@ -8,13 +8,13 @@ namespace ClienteApp.Forms
 {
     public partial class FrmCalculadora : Form
     {
-        private ClienteTCP _cliente;
-        private string _servidorIp = "127.0.0.1";
-        private int _puerto = 8080;
+        private ClienteTCP _cliente;                // Objeto para comuniación TCP
+        private string _servidorIp = "127.0.0.1";   // IP local
+        private int _puerto = 8080;                 // Puerto del servidor
 
         public FrmCalculadora()
         {
-            InitializeComponent();
+            InitializeComponent();                  // Método generado por el diseñador
             InicializarCliente();
             ConfigurarBotones();
             ConfigurarEstadoInicial();
@@ -23,6 +23,8 @@ namespace ClienteApp.Forms
         private void InicializarCliente()
         {
             _cliente = new ClienteTCP();
+
+            // Suscribirse a eventos del cliente
             _cliente.OnConexionEstablecida += ConexionEstablecida;
             _cliente.OnResultadoRecibido += ResultadoRecibido;
             _cliente.OnError += ErrorRecibido;
@@ -32,7 +34,7 @@ namespace ClienteApp.Forms
         private void ConfigurarEstadoInicial()
         {
             lblEstado.Text = "Desconectado";
-            btnEvaluar.Enabled = false;
+            btnEvaluar.Enabled = false;     // Deshabilitar hasta conectar
             btnHistorial.Enabled = false;
         }
 
@@ -77,7 +79,7 @@ namespace ClienteApp.Forms
 
         private void ConexionEstablecida(string mensaje)
         {
-            this.Invoke((Action)delegate
+            this.Invoke((Action)delegate            // "Invoke" porque estamos en un hilo diferente al de la UI
             {
                 MessageBox.Show(mensaje, "Conexión", 
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
